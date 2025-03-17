@@ -13,7 +13,7 @@ jobs:
     name: Build and publish Enmity for iOS
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: 'main'
           submodules: true
@@ -24,7 +24,7 @@ jobs:
           echo "heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1`" >> $GITHUB_OUTPUT
 
       - name: Use cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/theos
@@ -34,13 +34,13 @@ jobs:
         uses: Randomblock1/theos-action@v1
 
       - name: Prepare Azule
-        run : |
+        run: |
           git clone https://github.com/Al4ise/Azule ${{ github.workspace }}/Azule
           cd Azule
           git checkout 27c02b415cff15b1c131a0e95bcc2438023f86da
 
       - name: Prepare Enmity Patcher
-        run : |
+        run: |
           curl -L https://github.com/enmity-mod/patcher/releases/latest/download/patcher.mac-amd64 -o ${{ github.workspace }}/patcher
           chmod +x patcher
       
@@ -49,7 +49,7 @@ jobs:
           curl -L ${{ inputs.discord_ipa_url }} -o ${{ github.workspace }}/Discord.ipa
 
       - name: Patch Discord
-        run : |
+        run: |
           ${{ github.workspace }}/patcher ${{ github.workspace }}/Discord.ipa
           mkdir out
 
@@ -100,12 +100,12 @@ jobs:
           mv $(find packages -name "*.deb" -print -quit) out/Enmity.Rootless.Development.deb
 
       - name: Create Enmity.ipa
-        run : |
+        run: |
           ${{ github.workspace }}/Azule/azule -U -i Enmity.ipa -o out -f out/Enmity.Sideload.deb
           mv out/Enmity+Enmity.Sideload.deb.ipa out/Enmity.ipa
 
       - name: Create Enmity.Dev.ipa
-        run : |
+        run: |
           ${{ github.workspace }}/Azule/azule -U -i Enmity.ipa -o out -f out/Enmity.Sideload.Development.deb
           mv out/Enmity+Enmity.Sideload.Development.deb.ipa out/Enmity.Development.ipa
 
